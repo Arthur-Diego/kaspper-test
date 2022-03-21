@@ -17,13 +17,15 @@ Lister usando filtros de todos os campos envolvidos na entidade. Para isso usei 
 Usei uma classe a ***ApiExceptionHandlerAdvice*** para capturar as exceptions das chamadas ou classes que sejam anotadas com ***@RestController***
 Com isso consigo gerar um feedback mais amigável para o consumidor da API.
 
-####### Obs
+###### Obs
 ```bash
 O campo curriculum, antes de inserir, precisa converter para base64 o arquivo em questão
 ```
 
 ## Instalação
 ```bash
+1 - Necessário JRE 11 e docker instalado.
+
 git clone https://github.com/Arthur-Diego/kaspper-test.git
 
 cd kaspper-test/
