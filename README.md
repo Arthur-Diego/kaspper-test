@@ -9,10 +9,10 @@ Simple API(Rest) for password validation following specifications
 * Swagger
 * Docker
 #### Solução
-A solução consiste num arquitetura simples de projeto, definidas por camada.
-As principais funções da api consistem em salvar ou atualizar um objeto, usei o mesmo endpoint para isso.
+A solução consiste num arquitetura simples de projeto, definidas por camada (Package by layer).
+
 Listar baseado em paginação.
-Lister usando filtros de todos os campos envolvidos na entidade. Para isso usei alguns recursos como reflection e recursão.
+Lister usando filtros de todos os campos envolvidos na entidade. Para isso usei alguns recursos como reflection.
 
 Usei uma classe a ***ApiExceptionHandlerAdvice*** para capturar as exceptions das chamadas ou classes que sejam anotadas com ***@RestController***
 Com isso consigo gerar um feedback mais amigável para o consumidor da API.
