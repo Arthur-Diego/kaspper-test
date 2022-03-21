@@ -1,0 +1,31 @@
+version: "3.9"
+
+networks:
+  kaspper-network:
+    driver: bridge
+
+services:
+  kaspper-mysql:
+    restart: always
+    image: mysql:8.0
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+    networks:
+      - kaspper-network
+
+  kaspper-api:
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: kaspper-api
+    environment:
+      DB_HOST: kaspper-mysql
+    ports:
+      - 8080:8080
+    networks:
+      - kaspper-network
+    depends_on:
+      - kaspper-mysql

@@ -18,7 +18,7 @@ public class CandidateResponseDTO {
 
     private CandidateProfileEnum profile;
 
-    private String salaryExpectation;
+    private Double salaryExpectation;
 
     private byte[] curriculum;
 }

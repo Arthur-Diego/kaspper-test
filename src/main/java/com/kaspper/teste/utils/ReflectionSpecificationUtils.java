@@ -5,14 +5,14 @@ import com.kaspper.teste.annotation.FieldEntity;
 
 import java.lang.reflect.Field;
 
-public class ReflectionSpecificationUtils {
+public abstract class ReflectionSpecificationUtils {
 
     public static String likeAll(String param){
         return "%"+param+"%";
     }
 
     public static boolean verifyIsNotString(Field f) {
-        return f.isAnnotationPresent(FieldEntity.class) && !f.getAnnotation(FieldEntity.class).isNotString();
+        return f.isAnnotationPresent(FieldEntity.class) && f.getAnnotation(FieldEntity.class).isNotString();
     }
 
     public static boolean verifyIsForeignKey(Field f) {

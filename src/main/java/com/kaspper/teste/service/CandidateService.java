@@ -3,11 +3,10 @@ package com.kaspper.teste.service;
 import com.kaspper.teste.dto.PageDTO;
 import com.kaspper.teste.dto.request.CandidateRequestDTO;
 import com.kaspper.teste.dto.response.CandidateResponseDTO;
-import com.kaspper.teste.model.Candidate;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CandidateService {
 
@@ -20,6 +19,8 @@ public interface CandidateService {
     public PageDTO<CandidateResponseDTO> findPageable(Pageable pageable);
 
     public void save(CandidateRequestDTO dto);
+
+    public void update(Long id, CandidateRequestDTO dto);
 
     public void remove(Long id);
 

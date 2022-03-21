@@ -33,7 +33,7 @@ public class Candidate {
     private CandidateProfileEnum profile;
 
     @Column(name = "salary_expectation")
-    private String salaryExpectation;
+    private Double salaryExpectation;
 
     @OneToMany(mappedBy = "candidate", fetch = FetchType.LAZY)
     private List<JobCandidate> job;

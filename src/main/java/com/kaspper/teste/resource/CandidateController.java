@@ -1,8 +1,10 @@
 package com.kaspper.teste.resource;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaspper.teste.dto.PageDTO;
 import com.kaspper.teste.dto.request.CandidateRequestDTO;
+import com.kaspper.teste.dto.request.UpdateEntityGroup;
 import com.kaspper.teste.dto.response.CandidateResponseDTO;
 import com.kaspper.teste.service.CandidateService;
 import io.swagger.annotations.ApiOperation;
@@ -10,28 +12,29 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/api/candidate")
-public class CandidateController {
+public class CandidateController extends AbstractCommonController {
 
     private final CandidateService candidateService;
 
-    @ApiOperation(value = "Find all clients with filters")
+    @ApiOperation(value = "Find by id")
     @GetMapping(path = "/find/{id}")
     public ResponseEntity<CandidateResponseDTO> findAllWithFilters(@PathVariable(value = "id") Long id) {
         return ResponseEntity.ok(candidateService.findBydId(id));
     }
 
-    @ApiOperation(value = "Find all candidate")
+    @ApiOperation(value = "Find all candidate with filters")
     @GetMapping(path = "/find")
     public ResponseEntity<List<CandidateResponseDTO>> findAll() {
         return ResponseEntity.ok(candidateService.findAll());
@@ -40,11 +43,6 @@ public class CandidateController {
     @ApiOperation(value = "Find all candidate")
     @GetMapping(path = "/find/filter")
     public ResponseEntity<List<CandidateResponseDTO>> findAllWithFilter(CandidateRequestDTO dto) {
-        try {
-            List<CandidateResponseDTO> candidateResponseDTOS = candidateService.findFilter(dto);
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
         return ResponseEntity.ok(candidateService.findFilter(dto));
     }
 
@@ -64,13 +62,21 @@ public class CandidateController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Update candidate")
     @PutMapping(path = "/update")
-    public void update(@RequestBody @Valid CandidateRequestDTO dto) {
+    public void update(@RequestBody @Validated(UpdateEntityGroup.class) CandidateRequestDTO dto) {
         candidateService.save(dto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Update partial candidate")
+    @PatchMapping(path = "/update/{id}")
+    public void updatePartial(@PathVariable("id") Long id, @RequestBody CandidateRequestDTO dto) {
+
+        candidateService.update(id, dto);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete candidate")
-    @GetMapping(path = "/remove/{id}")
+    @DeleteMapping(path = "/remove/{id}")
     public void delete(@PathVariable(value = "id") Long id){
         candidateService.remove(id);
     }
@@ -85,13 +91,4 @@ public class CandidateController {
         generateFile(response, data, "curriculum.pdf");
     }
 
-    private void generateFile(HttpServletResponse response, byte[] data, String name)
-            throws IOException {
-
-        response.setContentType("application/pdf");
-        response.setHeader("Content-disposition", "attachment; filename=" + name);
-        response.setContentLength(data.length);
-        response.getOutputStream().write(data);
-        response.getOutputStream().flush();
-    }
 }

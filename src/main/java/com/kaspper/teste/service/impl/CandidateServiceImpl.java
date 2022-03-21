@@ -1,14 +1,17 @@
 package com.kaspper.teste.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaspper.teste.builder.CandidateBuilder;
 import com.kaspper.teste.builder.PageBuilder;
 import com.kaspper.teste.dto.PageDTO;
 import com.kaspper.teste.dto.request.CandidateRequestDTO;
 import com.kaspper.teste.dto.response.CandidateResponseDTO;
+import com.kaspper.teste.exception.BusinessException;
 import com.kaspper.teste.exception.EntityNotFoundException;
 import com.kaspper.teste.model.Candidate;
 import com.kaspper.teste.model.Job;
 import com.kaspper.teste.model.JobCandidate;
+import com.kaspper.teste.model.type.CandidateProfileEnum;
 import com.kaspper.teste.repository.CandidateRepository;
 import com.kaspper.teste.service.CandidateService;
 import com.kaspper.teste.service.JobCandidateService;
@@ -19,9 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ReflectionUtils;
 
-import javax.transaction.Transactional;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -74,34 +80,83 @@ public class CandidateServiceImpl implements CandidateService {
     @Transactional
     public void save(CandidateRequestDTO dto) {
 
-        log.info("[m=save] - Save candidate...");
+        log.info("[m=save] - Find or verify candidate...");
         if (dto.getId() != null) {
             repository.findById(dto.getId())
                     .orElseThrow(() -> new EntityNotFoundException("Candidate not found"));
         }
 
+        log.info("[m=save] - Save candidate...");
         Candidate candidate = repository.save(candidateBuilder.build(dto));
+        associateJobCandidate(dto, candidate);
+    }
 
-        if(Objects.nonNull(dto.getJob()) && !dto.getJob().isEmpty()){
+    private void associateJobCandidate(CandidateRequestDTO dto, Candidate candidate) {
+
+        log.info("[m=associateJobCandidate - process associate candidate with job]");
+        if (Objects.nonNull(dto.getJob()) && !dto.getJob().isEmpty()) {
             dto.getJob().forEach(idJob -> {
-                Job job = jobService.findById(idJob);
+                Job job = jobService.findEntityById(idJob);
 
-                JobCandidate jobCandidate =  JobCandidate.builder()
+                JobCandidate jobCandidate = JobCandidate.builder()
                         .candidate(candidate)
                         .job(job)
                         .build();
+
+                log.info("[m=save] - Save relationship with JobCandidate...");
                 jobCandidateService.save(jobCandidate);
             });
         }
     }
 
     @Override
-    public void remove(Long id) {
+    @Transactional
+    public void update(Long id, CandidateRequestDTO dto) {
 
-        log.info("[m=remove] - Remove candidate...");
+        log.info("[m=save] - Find or verify candidate...");
         Candidate candidate = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Candidate not found"));
 
+        associateJobCandidate(dto, candidate);
+
+        dto.setJob(null);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> fields = objectMapper.convertValue(dto, Map.class);
+        updateFieldsNonNull(fields, candidate);
+
+        repository.save(candidate);
+    }
+
+    private void updateFieldsNonNull(Map<String, Object> fields, Candidate candidate) {
+
+        fields.forEach((k, y) -> {
+            Field field = ReflectionUtils.findField(Candidate.class, k);
+            field.setAccessible(true);
+            try {
+                if (k.equalsIgnoreCase("profile")) {
+                    field.set(candidate, CandidateProfileEnum.findByValue(y.toString()));
+                } else {
+                    field.set(candidate, y);
+                }
+            } catch (IllegalAccessException e) {
+                throw new BusinessException(e.getMessage(), e);
+            }
+        });
+    }
+
+    @Override
+    @Transactional
+    public void remove(Long id) {
+
+        log.info("[m=remove] - Find candidate...");
+        Candidate candidate = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Candidate not found"));
+
+        log.info("[m=remove] - Remove relationship with JobCandidate...");
+        jobCandidateService.removeByCandidate(candidate);
+
+        log.info("[m=remove] - Remove candidate...");
         repository.delete(candidate);
     }
 }

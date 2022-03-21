@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface JobService {
 
-    public Job findById(Long id);
+    public Job findEntityById(Long id);
+
+    public JobResponseDTO findById(Long id);
 
     public List<JobResponseDTO> findAll();
 

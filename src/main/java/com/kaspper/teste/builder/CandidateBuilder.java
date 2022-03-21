@@ -5,13 +5,15 @@ import com.kaspper.teste.dto.response.CandidateResponseDTO;
 import com.kaspper.teste.model.Candidate;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class CandidateBuilder {
 
     public Candidate build(CandidateRequestDTO dto){
         return Candidate.builder()
                 .id(dto.getId())
-                .curriculum(dto.getCurriculum().getBytes())
+                .curriculum(getArrayByte(dto.getCurriculum()))
                 .cpf(dto.getCpf())
                 .name(dto.getName())
                 .profile(dto.getProfile())
@@ -37,5 +39,12 @@ public class CandidateBuilder {
                 .profile(candidate.getProfile())
                 .salaryExpectation(candidate.getSalaryExpectation())
                 .build();
+    }
+
+    private byte[] getArrayByte(String encondingFile){
+        if(Objects.nonNull(encondingFile) && !encondingFile.isEmpty()){
+            return encondingFile.getBytes();
+        }
+        return null;
     }
 }

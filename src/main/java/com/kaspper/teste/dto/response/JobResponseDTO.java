@@ -1,12 +1,21 @@
 package com.kaspper.teste.dto.response;
 
+import com.kaspper.teste.model.type.JobTypeEnum;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.GetMapping;
+
 
 @Builder
 @Getter
 @Setter
 public class JobResponseDTO {
+
+    private Long id;
+
+    private String description;
+
+    private JobTypeEnum type;
+
+    private Double salary;
 }

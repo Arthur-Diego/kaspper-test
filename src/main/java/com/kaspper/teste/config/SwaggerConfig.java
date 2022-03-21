@@ -29,7 +29,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Simple REST API")
-                .description("Simple API(Rest) for CRUD clients following specifications")
+                .description("Simple API(Rest) for CRUD Candidate and jobs following specifications")
                 .version("1.0.0")
                 .contact(new Contact("Arthur Diego", "https://www.linkedin.com/in/arthur-diego/", "arthur.diego7@gmail.com"))
                 .build();
