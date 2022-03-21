@@ -26,7 +26,7 @@ O campo curriculum, antes de inserir, precisa converter para base64 o arquivo em
 ```bash
 git clone https://github.com/Arthur-Diego/kaspper-test.git
 
-cd builders-testcase/
+cd kaspper-test/
 
 ./mvnw clean package -DskipTests && docker-compose up --build
 ```
