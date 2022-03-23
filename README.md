@@ -1,6 +1,5 @@
 # Kaspper - TestCase
 
-Simple API(Rest) for password validation following specifications
 #### Tecnologias
 * Java 11 
 * Springboot 2.5.2
